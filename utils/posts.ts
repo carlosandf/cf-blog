@@ -38,5 +38,3 @@ export async function listPosts(): Promise<Post[]> {
 
   return posts;
 }
-
-listPosts();
