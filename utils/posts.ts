@@ -26,6 +26,23 @@ export async function loadPost(id: string): Promise<Post | null> {
 }
 
 export async function listPosts(): Promise<Post[]> {
+  const promises = [];
+
+  for await (const entry of Deno.readDir("./content/posts")) {
+    const { name } = entry;
+    const [id] = name.split(".");
+    if (id) promises.push(loadPost(id));
+  }
+
+  const posts = await Promise.all(promises) as Post[]; // paralelo
+
+  posts.sort((a, b) => {
+    return b.date.getTime() - a.date.getTime();
+  });
+  return posts;
+}
+
+export async function listPostsSequentially(): Promise<Post[]> {
   const posts = [];
   for await (const entry of Deno.readDir("./content/posts")) {
     const { name } = entry;
